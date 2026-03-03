@@ -2,26 +2,27 @@ import { db } from "@/utils/db";
 import { NextRequest } from "next/server";
 import { encode } from "jwt-simple";
 
-export async function GET(request: NextRequest) {
-    const searchParams = request.nextUrl.searchParams;
-    const paramUsername = searchParams.get("username");
-    const paramPassword = searchParams.get("password");
+export async function POST(request: NextRequest) {
+    const bodyData = await request.json();
+
+    const username = bodyData.username;
+    const password = bodyData.password;
 
     const promisePool = db.promise();
     const [rows, fields]: any = await promisePool.query(
-        `SELECT * FROM Users WHERE \`username\` = "${paramUsername}" AND \`password\` = "${paramPassword}";`,
+        `SELECT * FROM Users WHERE \`username\` = "${username}" AND \`password\` = "${password}";`,
     );
 
     if (rows.length == 0) {
         return new Response(null, {
             status: 404,
-            statusText: "Not found username or password",
+            statusText: "not found username or password",
         });
     }
 
     const jwt = encode(
         {
-            sub: paramUsername,
+            sub: username,
         },
         rows[0].secret_key,
     );
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     return new Response(
         JSON.stringify({
             key: jwt,
-            username: paramUsername,
+            username: username,
         }),
         {
             headers: { "Content-Type": "application/json" },

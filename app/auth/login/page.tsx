@@ -6,11 +6,32 @@ import { useState } from "react";
 export default function Login() {
     const [username, setUsername] = useState<String>("");
     const [password, setPassword] = useState<String>("");
+    const [errorMessage, setErrorMessage] = useState<String>("");
 
     const requestLogin = async () => {
-        const res = await fetch(
-            `/api/auth/login?username=${username}&password=${password}`,
-        );
+        if (username.length == 0 || password.length == 0) {
+            setErrorMessage("please enter username and password");
+            return;
+        }
+
+        const res = await fetch(`/api/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username,
+                password,
+            }),
+        });
+
+        if (!res.ok) {
+            if (res.status == 404) {
+                setErrorMessage("username or password error");
+            }
+            return;
+        }
+
         const result = await res.json();
 
         localStorage.setItem("key", result.key);
@@ -28,8 +49,9 @@ export default function Login() {
                     <div>Username</div>
                     <input
                         type="text"
-                        className="w-80 h-10 text-black border-solid border-2 pl-2"
+                        className={`w-80 h-10 text-black border-solid border-2 pl-2 ${errorMessage.length == 0 ? "border-black" : "border-red-500"}`}
                         onChange={(event) => {
+                            setErrorMessage("");
                             setUsername(event.target.value);
                         }}
                     />
@@ -39,11 +61,17 @@ export default function Login() {
                     <div>Password</div>
                     <input
                         type="text"
-                        className="w-80 h-10 text-black border-solid border-2 pl-2"
+                        className={`w-80 h-10 text-black border-solid border-2 pl-2 ${errorMessage.length == 0 ? "border-black" : "border-red-500"}`}
                         onChange={(event) => {
+                            setErrorMessage("");
                             setPassword(event.target.value);
                         }}
                     />
+                    <div
+                        className={`text-red-500 ${errorMessage.length == 0 ? "hidden" : "flex"}`}
+                    >
+                        {errorMessage}
+                    </div>
                 </div>
             </div>
 
