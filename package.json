@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@geist-ui/core": "^2.3.8",
     "jwt-simple": "^0.5.6",
     "lucide-react": "^0.576.0",
     "mysql2": "^3.18.2",

@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Login() {
+    const router = useRouter();
+
     const [username, setUsername] = useState<String>("");
     const [password, setPassword] = useState<String>("");
     const [errorMessage, setErrorMessage] = useState<String>("");
 
-    const requestLogin = async () => {
+    const handleLogin = async () => {
         if (username.length == 0 || password.length == 0) {
             setErrorMessage("please enter username and password");
             return;
@@ -36,6 +39,8 @@ export default function Login() {
 
         localStorage.setItem("key", result.key);
         localStorage.setItem("username", result.username);
+
+        router.push("/");
     };
 
     return (
@@ -78,7 +83,7 @@ export default function Login() {
             <div className="flex flex-col justify-start items-center gap-2">
                 <button
                     className="flex justify-center items-center text-white bg-black border-solid border-2 hover:bg-white duration-150 hover:text-black w-80 h-10"
-                    onClick={requestLogin}
+                    onClick={handleLogin}
                 >
                     Login
                 </button>

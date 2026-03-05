@@ -3,14 +3,21 @@ import checkPasswordSecure, {
     PasswordScore,
     passwordSecureRuleLabel,
 } from "@/utils/checkPasswordSecure";
-import { CircleCheck, CircleX } from "lucide-react";
+import { CircleCheck, CircleX, EyeClosed, Eye } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Register() {
+    const router = useRouter();
+
     const [username, setUsername] = useState<String>("");
     const [password, setPassword] = useState<String>("");
     const [confirmPassword, setConfirmPassword] = useState<String>("");
+
+    const [hidePassword, setHidePassword] = useState<boolean>(true);
+    const [hideConfirmPassword, setHideConfirmPassword] =
+        useState<boolean>(true);
 
     const [errorMessage, setErrorMessage] = useState<String>("");
     const [isInputError, setIsInputError] = useState<boolean>(false);
@@ -31,7 +38,7 @@ export default function Register() {
         setPasswordSecureList(_passwordSecureList);
     }, [password]);
 
-    const requestRegister = async () => {
+    const handleRegister = async () => {
         if (
             username.length == 0 ||
             password.length == 0 ||
@@ -72,6 +79,8 @@ export default function Register() {
 
         localStorage.setItem("key", result.key);
         localStorage.setItem("username", result.username);
+
+        router.push("/");
     };
 
     return (
@@ -99,30 +108,48 @@ export default function Register() {
                     </div>
                 </div>
 
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center w-80">
                     <div>Password</div>
-                    <input
-                        type="text"
-                        className={`w-80 h-10 text-black border-solid border-2 pl-2 ${isInputError || isPasswordInputError ? "border-red-500" : "border-black"}`}
-                        onChange={(event) => {
-                            setIsInputError(false);
-                            setIsPasswordInputError(false);
-                            setPassword(event.target.value);
-                        }}
-                    />
+                    <div className="flex items-center gap-2 flex-row">
+                        <button
+                            onClick={() => {
+                                setHidePassword((prev) => !prev);
+                            }}
+                        >
+                            {hidePassword ? <EyeClosed /> : <Eye />}
+                        </button>
+                        <input
+                            type={hidePassword ? "password" : "text"}
+                            className={`w-full h-10 text-black border-solid border-2 pl-2 ${isInputError || isPasswordInputError ? "border-red-500" : "border-black"}`}
+                            onChange={(event) => {
+                                setIsInputError(false);
+                                setIsPasswordInputError(false);
+                                setPassword(event.target.value);
+                            }}
+                        />
+                    </div>
                 </div>
 
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center w-80">
                     <div>Confirm Password</div>
-                    <input
-                        type="text"
-                        className={`w-80 h-10 text-black border-solid border-2 pl-2 ${isInputError || isPasswordInputError ? "border-red-500" : "border-black"}`}
-                        onChange={(event) => {
-                            setIsInputError(false);
-                            setIsPasswordInputError(false);
-                            setConfirmPassword(event.target.value);
-                        }}
-                    />
+                    <div className="flex items-center gap-2 flex-row">
+                        <button
+                            onClick={() => {
+                                setHideConfirmPassword((prev) => !prev);
+                            }}
+                        >
+                            {hideConfirmPassword ? <EyeClosed /> : <Eye />}
+                        </button>
+                        <input
+                            type={hideConfirmPassword ? "password" : "text"}
+                            className={`w-80 h-10 text-black border-solid border-2 pl-2 ${isInputError || isPasswordInputError ? "border-red-500" : "border-black"}`}
+                            onChange={(event) => {
+                                setIsInputError(false);
+                                setIsPasswordInputError(false);
+                                setConfirmPassword(event.target.value);
+                            }}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex flex-col gap-1 w-80">
@@ -154,31 +181,13 @@ export default function Register() {
                             );
                         },
                     )}
-                    {/* <div className="flex gap-2">
-                        <CircleCheck className="" />
-                        <div className="text-sm">
-                            length more than or equal 12
-                        </div>
-                    </div>
-                    <div className="flex gap-2">
-                        <CircleCheck className="" />
-                        <div className="text-sm">has number</div>
-                    </div>
-                    <div className="flex gap-2">
-                        <CircleCheck className="" />
-                        <div className="text-sm">has lowercase alphabet</div>
-                    </div>
-                    <div className="flex gap-2">
-                        <CircleCheck className="" />
-                        <div className="text-sm">has uppercase alphabet</div>
-                    </div> */}
                 </div>
             </div>
 
             <div className="flex flex-col justify-start items-center gap-2">
                 <button
                     className="flex justify-center items-center text-white bg-black border-solid border-2 hover:bg-white duration-150 hover:text-black w-80 h-10"
-                    onClick={requestRegister}
+                    onClick={handleRegister}
                 >
                     Register
                 </button>
